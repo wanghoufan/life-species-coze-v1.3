@@ -71,11 +71,27 @@ export async function POST(
             ...(snapData.secondarySpeciesKeys || []),
           ]);
         
+        const normalizeTags = (raw: any): string[] => {
+          if (Array.isArray(raw)) return raw;
+          if (typeof raw === 'string' && raw.trim().length > 0) {
+            return raw.split(/[、,，]/).map((t: string) => t.trim()).filter(Boolean);
+          }
+          return [];
+        };
+        const scList = (speciesContent as any[]) || [];
+        const normalizeSpecies = (s: any) => ({
+          ...s,
+          summon_tags: normalizeTags(s.summon_tags),
+          food_tags: normalizeTags(s.food_tags),
+        });
+
         return NextResponse.json({
           runId,
           shareCode: snap.share_code,
-          mainSpecies: (speciesContent as any)?.find((s: any) => s.species_key === snapData.mainSpeciesKey) || null,
-          secondarySpecies: (speciesContent as any)?.filter((s: any) => (snapData.secondarySpeciesKeys || []).includes(s.species_key)) || [],
+          mainSpecies: normalizeSpecies(scList.find((s: any) => s.species_key === snapData.mainSpeciesKey)) || null,
+          secondarySpecies: scList
+            .filter((s: any) => (snapData.secondarySpeciesKeys || []).includes(s.species_key))
+            .map(normalizeSpecies),
           status: 'already_completed',
         });
       }
@@ -169,15 +185,30 @@ export async function POST(
       ]);
     
     const speciesList = (speciesContent as any[]) || [];
-    
+
+    const normalizeTags = (raw: any): string[] => {
+      if (Array.isArray(raw)) return raw;
+      if (typeof raw === 'string' && raw.trim().length > 0) {
+        return raw.split(/[、,，]/).map((t: string) => t.trim()).filter(Boolean);
+      }
+      return [];
+    };
+    const normalizeSpecies = (s: any) => ({
+      ...s,
+      summon_tags: normalizeTags(s.summon_tags),
+      food_tags: normalizeTags(s.food_tags),
+    });
+
     return NextResponse.json({
       runId,
       shareCode,
       mainSpeciesKey: result.mainSpeciesKey,
       secondarySpeciesKeys: result.secondarySpeciesKeys,
       dimensionScores: result.dimensionScores,
-      mainSpecies: speciesList.find((s: any) => s.species_key === result.mainSpeciesKey) || null,
-      secondarySpecies: speciesList.filter((s: any) => result.secondarySpeciesKeys.includes(s.species_key)) || [],
+      mainSpecies: normalizeSpecies(speciesList.find((s: any) => s.species_key === result.mainSpeciesKey)) || null,
+      secondarySpecies: speciesList
+        .filter((s: any) => result.secondarySpeciesKeys.includes(s.species_key))
+        .map(normalizeSpecies),
       status: 'completed',
     });
   } catch (e) {

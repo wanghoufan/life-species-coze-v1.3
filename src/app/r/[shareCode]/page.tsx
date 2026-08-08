@@ -91,6 +91,11 @@ export default function ResultPage() {
   const main = result.mainSpecies;
   const secondaries = result.secondarySpecies;
 
+  // Defensive: ensure tag fields are arrays even if API contract changes
+  const safeTags = (v: any): string[] => (Array.isArray(v) ? v : []);
+  const summonTags = safeTags(main?.summon_tags);
+  const foodTags = safeTags(main?.food_tags);
+
   return (
     <div className="min-h-screen bg-[#FFF8F0] max-w-[480px] mx-auto px-5 py-8">
       {/* 1. Main species image */}
@@ -140,11 +145,11 @@ export default function ResultPage() {
       </div>
 
       {/* 6. Summon tags */}
-      {main.summon_tags && main.summon_tags.length > 0 && (
+      {summonTags.length > 0 && (
         <div className="mb-3">
           <p className="text-xs font-bold text-[#888] mb-2">📢 如何召唤我</p>
           <div className="flex flex-wrap gap-1.5">
-            {main.summon_tags.map((tag, i) => (
+            {summonTags.map((tag, i) => (
               <span key={i} className="px-2.5 py-1 bg-[#FFD1DC] text-[#2D2D2D] rounded-full text-[11px] font-medium">
                 {tag}
               </span>
@@ -154,11 +159,11 @@ export default function ResultPage() {
       )}
 
       {/* 7. Food tags */}
-      {main.food_tags && main.food_tags.length > 0 && (
+      {foodTags.length > 0 && (
         <div className="mb-3">
           <p className="text-xs font-bold text-[#888] mb-2">🍽️ 投喂指南</p>
           <div className="flex flex-wrap gap-1.5">
-            {main.food_tags.map((tag, i) => (
+            {foodTags.map((tag, i) => (
               <span key={i} className="px-2.5 py-1 bg-[#C5E8C5] text-[#2D2D2D] rounded-full text-[11px] font-medium">
                 {tag}
               </span>

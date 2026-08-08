@@ -45,14 +45,33 @@ export async function GET(
       .single();
     
     const runData = run as any;
-    
+
+    // Normalize species content: summon_tags / food_tags may be stored as
+    // comma-separated strings; the frontend expects arrays.
+    const normalizeTags = (raw: any): string[] => {
+      if (Array.isArray(raw)) return raw;
+      if (typeof raw === 'string' && raw.trim().length > 0) {
+        return raw.split(/[、,，]/).map((t: string) => t.trim()).filter(Boolean);
+      }
+      return [];
+    };
+
+    const speciesList = (speciesContent as any[]) || [];
+    const normalizeSpecies = (s: any) => ({
+      ...s,
+      summon_tags: normalizeTags(s.summon_tags),
+      food_tags: normalizeTags(s.food_tags),
+    });
+
     return NextResponse.json({
       shareCode,
       testVersion: runData?.test_version || data.testVersion,
       scorerVersion: runData?.scorer_version || data.scorerVersion,
       completedAt: runData?.completed_at || data.completedAt,
-      mainSpecies: (speciesContent as any[])?.find((s: any) => s.species_key === mainSpeciesKey) || null,
-      secondarySpecies: (speciesContent as any[])?.filter((s: any) => secondarySpeciesKeys.includes(s.species_key)) || [],
+      mainSpecies: normalizeSpecies(speciesList.find((s: any) => s.species_key === mainSpeciesKey)) || null,
+      secondarySpecies: speciesList
+        .filter((s: any) => secondarySpeciesKeys.includes(s.species_key))
+        .map(normalizeSpecies),
       dimensionScores: (dimScores as any[]) || [],
     });
   } catch (e) {
