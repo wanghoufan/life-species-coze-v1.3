@@ -250,10 +250,16 @@ export default function ResultPage() {
       <div className="text-center pb-12">
         <button
           onClick={() => setShowStats(true)}
-          className="inline-block text-sm text-[#999] hover:text-[#2D2D2D] transition-colors duration-150
-                     underline underline-offset-2 decoration-dotted"
+          className="w-full bg-white rounded-2xl p-4 shadow-sm border border-[#E8E0D8] 
+                     active:scale-[0.98] transition-transform duration-150 hover:border-[#ccc]"
         >
-          📊 看看大家都在什么物种
+          <div className="flex items-center gap-3">
+            <span className="text-2xl">📊</span>
+            <div className="text-left">
+              <p className="font-semibold text-sm text-[#2D2D2D]">物种分布图鉴</p>
+              <p className="text-xs text-[#888]">看看大家都在什么物种</p>
+            </div>
+          </div>
         </button>
       </div>
 
