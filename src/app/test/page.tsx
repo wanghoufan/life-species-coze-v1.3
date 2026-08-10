@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 
 const QUESTIONS = [
@@ -37,6 +37,7 @@ export default function TestPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [mounted, setMounted] = useState(false);
+  const questionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => setMounted(true), []);
 
@@ -59,10 +60,15 @@ export default function TestPage() {
     }
   }, [answers, currentQ, mounted]);
 
+  // Scroll to top when question changes
+  useEffect(() => {
+    questionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, [currentQ]);
+
   const handleSelect = useCallback((optionIndex: number) => {
     const q = QUESTIONS[currentQ];
     setError('');
-    
+
     if (q.multi) {
       setAnswers(prev => {
         const current = prev[q.q] || [];
@@ -103,10 +109,16 @@ export default function TestPage() {
     }
   }, [currentQ]);
 
+  const handleJump = useCallback((qIndex: number) => {
+    setCurrentQ(qIndex);
+    setError('');
+  }, []);
+
   const handleSubmit = useCallback(async () => {
-    const allAnswered = QUESTIONS.every(q => answers[q.q] && answers[q.q].length > 0);
-    if (!allAnswered) {
-      setError('请完成所有题目');
+    const missed = QUESTIONS.filter(q => !answers[q.q] || answers[q.q].length === 0);
+    if (missed.length > 0) {
+      const missedNums = missed.map(q => q.q);
+      setError(`第 ${missedNums.join('、')} 题未完成，请点击上方红色标记补填`);
       return;
     }
 
@@ -117,7 +129,7 @@ export default function TestPage() {
       // Start a new run
       const startRes = await fetch('/api/runs/start', { method: 'POST' });
       const startData = await startRes.json();
-      
+
       if (!startRes.ok) {
         throw new Error(startData.error || 'Failed to start test');
       }
@@ -139,7 +151,7 @@ export default function TestPage() {
       });
 
       const completeData = await completeRes.json();
-      
+
       if (!completeRes.ok) {
         throw new Error(completeData.error || 'Failed to complete test');
       }
@@ -159,24 +171,54 @@ export default function TestPage() {
   if (!mounted) return null;
 
   const q = QUESTIONS[currentQ];
-  const progress = ((currentQ + 1) / QUESTIONS.length) * 100;
   const selected = answers[q.q] || [];
+  const missedQuestions = QUESTIONS.filter(qq => !answers[qq.q] || answers[qq.q].length === 0);
 
   return (
     <div className="min-h-screen bg-[#FFF8F0] flex flex-col max-w-[480px] mx-auto px-5 py-6">
-      {/* Progress bar */}
-      <div className="mb-6">
+      {/* Dot progress indicator */}
+      <div className="mb-6" ref={questionRef}>
         <div className="flex justify-between items-center mb-2">
           <span className="text-xs text-[#888] font-medium">
             {currentQ + 1} / {QUESTIONS.length}
           </span>
-          <span className="text-xs text-[#888]">{Math.round(progress)}%</span>
+          {missedQuestions.length > 0 && (
+            <span className="text-xs text-red-500 font-medium">
+              漏了 {missedQuestions.length} 题
+            </span>
+          )}
         </div>
-        <div className="h-1.5 bg-[#E8E0D8] rounded-full overflow-hidden">
-          <div
-            className="h-full bg-[#2D2D2D] rounded-full transition-all duration-500 ease-out"
-            style={{ width: `${progress}%` }}
-          />
+        <div className="flex gap-1.5 flex-wrap">
+          {QUESTIONS.map((qq, idx) => {
+            const isAnswered = answers[qq.q] && answers[qq.q].length > 0;
+            const isCurrent = idx === currentQ;
+            const isMissed = !isAnswered;
+
+            return (
+              <button
+                key={qq.q}
+                onClick={() => handleJump(idx)}
+                className={`w-5 h-5 rounded-full text-[9px] font-bold flex items-center justify-center
+                  transition-all duration-150
+                  ${isCurrent
+                    ? 'ring-2 ring-offset-1 ring-[#2D2D2D] scale-110'
+                    : ''
+                  }
+                  ${isAnswered
+                    ? isCurrent
+                      ? 'bg-[#2D2D2D] text-white'
+                      : 'bg-[#2D2D2D] text-white opacity-60 hover:opacity-100'
+                    : isCurrent
+                      ? 'bg-red-500 text-white'
+                      : 'bg-red-300 text-white hover:bg-red-500'
+                  }
+                `}
+                title={`第 ${qq.q} 题${isMissed ? '（未完成）' : ''}`}
+              >
+                {qq.q}
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -224,9 +266,9 @@ export default function TestPage() {
       {/* Navigation */}
       <div className="pt-4 space-y-2">
         {error && (
-          <p className="text-red-500 text-xs text-center">{error}</p>
+          <p className="text-red-500 text-xs text-center leading-relaxed">{error}</p>
         )}
-        
+
         <div className="flex gap-3">
           {currentQ > 0 && (
             <button
@@ -237,7 +279,7 @@ export default function TestPage() {
               上一题
             </button>
           )}
-          
+
           {currentQ < QUESTIONS.length - 1 ? (
             <button
               onClick={handleNext}

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
+import StatsModal from '@/components/StatsModal';
 
 interface Species {
   species_key: string;
@@ -38,6 +39,7 @@ export default function ResultPage() {
   const [feedback, setFeedback] = useState<number | null>(null);
   const [feedbackSent, setFeedbackSent] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [showStats, setShowStats] = useState(false);
 
   useEffect(() => setMounted(true), []);
 
@@ -243,6 +245,19 @@ export default function ResultPage() {
           测测我是什么生活物种
         </Link>
       </div>
+
+      {/* Stats */}
+      <div className="text-center pb-12">
+        <button
+          onClick={() => setShowStats(true)}
+          className="inline-block text-sm text-[#999] hover:text-[#2D2D2D] transition-colors duration-150
+                     underline underline-offset-2 decoration-dotted"
+        >
+          📊 看看大家都在什么物种
+        </button>
+      </div>
+
+      <StatsModal open={showStats} onClose={() => setShowStats(false)} />
     </div>
   );
 }
