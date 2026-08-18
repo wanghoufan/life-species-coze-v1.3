@@ -1,0 +1,22 @@
+# ===== 生活物种 COZE 提示词交付包 · 忽略规则 =====
+
+# 冗余副本：AGENTS.md / HANDOFF.md 已标注为「已隔离、保留不删」的重复素材
+# （scratch/species_assets_v1 - 副本/ 含 24 图 + manifest.csv + 一个 part zip，疑似 species_assets_v1 的重复）
+scratch/
+
+# 原始素材压缩包：24 张 PNG 已解压至 species_assets_v1/（part1/2/3 子目录），
+# 与下方 ZIP 内容重复，故不重复入库；如需保留原始分包 ZIP 请按需移除本段。
+species_assets_v1_part1.zip
+species_assets_v1_part2.zip
+species_assets_v1_part3.zip
+
+# 操作系统 / 编辑器临时文件
+.DS_Store
+Thumbs.db
+*.swp
+*~
+
+# 本地密钥 / 环境变量（高权限信息严禁入库）
+.env
+.env.*
+*.local
