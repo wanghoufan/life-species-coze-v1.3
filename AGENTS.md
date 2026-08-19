@@ -1,61 +1,26 @@
-# 生活物种 - 项目上下文
+# AGENTS — 生活物种（COZE 提示词交付包）
 
-## 项目概览
-"生活物种"是一个趣味心理测试 Web 应用，通过 24 道题将用户匹配到 24 种"生活物种"之一，并生成 2 个跨家族副物种。
+> 项目结构事实与协作约定（neat-freak 2026-08-18 建立）
 
-## 技术栈
-- **Framework**: Next.js 16 (App Router)
-- **Core**: React 19
-- **Language**: TypeScript 5
-- **UI**: Tailwind CSS 4 + shadcn/ui
-- **Database**: Supabase (PostgreSQL)
-- **Scorer**: 纯 JS 模块 (life_species_calibrated_scorer_v1.mjs)
+## 项目性质
+- 本项目是「扣子（COZE）编程」的**最终开发提示词 v1.3 交付包**，非完整代码仓库、无可运行态。
+- 目标产出：带 Supabase 后端数据库的移动端优先 Web 网站（生活物种测试）。
+- 当前状态：DONE（提示词与素材交付完成）。
 
-## 目录结构
-```
-├── public/assets/species/     # 24 张角色 PNG 图片
-├── src/
-│   ├── app/
-│   │   ├── page.tsx           # 首页
-│   │   ├── test/page.tsx      # 24 道测试题
-│   │   └── r/[shareCode]/page.tsx  # 永久结果页
-│   │   └── api/
-│   │       ├── runs/start/route.ts      # 开始测试
-│   │       ├── runs/[runId]/complete/route.ts  # 完成测试
-│   │       ├── runs/[runId]/feedback/route.ts  # 反馈
-│   │       └── results/[shareCode]/route.ts    # 公开结果
-│   ├── components/ui/         # shadcn/ui 组件
-│   └── lib/supabase-admin.ts  # Supabase 管理客户端
-├── life_species_calibrated_scorer_v1.mjs       # 正式评分器
-├── life_species_calibrated_scorer_test_v1.mjs  # 评分器测试
-├── life_species_supabase_seed_manifest_v1.json # 物种数据清单
-├── DESIGN.md                 # 设计规范
-└── AGENTS.md                 # 本文件
-```
+## 项目结构事实
+- 主需求 / 开发规范：`docs/pm/life_species_coze_prompt_v1_3_FINAL.md`（COZE 提示词 v1.3，唯一权威）
+- 交付素材：`species_assets_v1/`（3 part 解压目录）、`species_assets_v1_part1/2/3.zip`（3 个独立 ZIP，共同组成 species_assets_v1）
+- 冗余副本（已隔离）：`scratch/species_assets_v1 - 副本/`
+- 规范骨架：`docs/{pm,qa,review,handoff,roles}/` + `scratch/`
 
-## 评分系统
-- **版本**: mvp-1.2-calibrated
-- **24 题 → 18 维度 → 24 物种**
-- 主物种 + 2 个跨家族副物种
-- 评分器纯函数，确定性输出
+## Source of Truth（务必遵守提示词约束）
+- 唯一正式评分事实源：`life_species_calibrated_scorer_v1.mjs`
+- 唯一正式图片映射依据：`life_species_supabase_seed_manifest_v1.json`
+- 24 张正式 PNG 命名与 `species_key` 固定绑定，禁止重命名 / 翻译 / 改扩展名
+- `manifest.csv` 不上传、不部署、不作为正式映射依据
+- 高权限信息（Supabase `service_role`、`DATABASE_URL`）仅服务端环境变量，严禁进前端 bundle
 
-## 数据库
-- `test_runs`: 测试运行记录
-- `test_answers`: 答案记录
-- `species_content`: 24 个物种的完整内容
-- `result_snapshot`: 永久结果快照（最小化 < 1KB）
-- `feedback`: 用户反馈
-- RLS: 匿名用户可插入/查询，service_role 管理
-
-## API 端点
-- `POST /api/runs/start` - 开始测试
-- `POST /api/runs/{runId}/complete` - 完成测试 (幂等)
-- `GET /api/results/{shareCode}` - 公开结果
-- `POST /api/runs/{runId}/feedback` - 提交反馈 (rating 1-4)
-
-## 关键规范
-- 移动端优先 (375/390/430px)
-- 一屏一题
-- Q10 最多选 3 项, Q15 最多选 5 项
-- 永久结果路径: /r/{share_code}
-- 分享码: 10 位 Base62
+## 协作约定
+- 实施时 3 个 ZIP 解压后合并为同一 `public/assets/species/`（24 张 PNG），禁止 part1/2/3 子目录
+- 评分模块须通过 `node life_species_calibrated_scorer_test_v1.mjs`：24/24 fixture、deterministic、crossFamilySecondary、status=PASS
+- 文档遵循规范模板 v2.3

@@ -1,165 +1,22 @@
-node_modules
-dist
+# ===== 生活物种 COZE 提示词交付包 · 忽略规则 =====
+
+# 冗余副本：AGENTS.md / HANDOFF.md 已标注为「已隔离、保留不删」的重复素材
+# （scratch/species_assets_v1 - 副本/ 含 24 图 + manifest.csv + 一个 part zip，疑似 species_assets_v1 的重复）
+scratch/
+
+# 原始素材压缩包：24 张 PNG 已解压至 species_assets_v1/（part1/2/3 子目录），
+# 与下方 ZIP 内容重复，故不重复入库；如需保留原始分包 ZIP 请按需移除本段。
+species_assets_v1_part1.zip
+species_assets_v1_part2.zip
+species_assets_v1_part3.zip
+
+# 操作系统 / 编辑器临时文件
 .DS_Store
-*.swp
-.git/*
-__pycache__/
-*.pyc
-.venv/*
-*.o
-*.a
-/vendor
-*.egg-info/
-/.env
-.env
-.cozeproj/reduction
-
-# JS/TS bundlers & build outputs
-.next
-.nuxt
-.turbo
-.vercel
-.parcel-cache
-.cache
-coverage
-storybook-static
-
-# Package manager artifacts
-.pnp*
-.npm
-
-# Python tooling
-.pytest_cache/
-.mypy_cache/
-.ruff_cache/
-.tox/
-
-# Go tooling
-bin/
-*.test
-
-# Editor / IDE
-.vscode/
-.idea/
-*.iml
-
-# OS / misc
 Thumbs.db
-ehthumbs.db
-
-# Logs
-output.log
-*.log
-*.log.*
-logs/
-
-# 视频文件
-*.mp4
-*.avi
-*.mov
-*.wmv
-*.flv
-*.mkv
-*.webm
-*.m4v
-*.mpeg
-*.mpg
-*.3gp
-*.f4v
-*.rmvb
-*.vob
-
-# 归档文件
-*.iso
-*.dmg
-*.rar
-*.zip
-*.gz
-
-# 文档类也默认加入
-*.pdf
-*.docx
-*.doc
-*.xlsx
-*.xls
-*.ppt
-*.pptx
-*.xlsx
-*.csv
-
-# Preview files
-.preview
-
-# CodeGraph index
-.codegraph
-# Dependencies
-node_modules/
-.pnp
-.pnp.js
-# Production build
-dist/
-build/
-out/
-.next/
-.rsbuild/
-# Testing
-coverage/
-*.lcov
-.nyc_output
-# Environment variables
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
-# Runtime data
-pids
-*.pid
-*.seed
-*.pid.lock
-# Diagnostic reports
-report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
-# Cache
-.cache/
-.parcel-cache/
-.eslintcache
-.stylelintcache
-.yarn/cache
-.yarn/unplugged
-.yarn/build-state.yml
-.yarn/install-state.gz
-node-compile-cache/
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-!.vscode/settings.json
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-*.swo
+*.swp
 *~
-# OS files
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-Desktop.ini
-# Temporary files
-*.tmp
-*.temp
-.tmp/
-.temp/
-# Optional files
-*.tgz
-*.tar
-# TypeScript
-*.tsbuildinfo
-# Misc
-.coze-logs
-.codegraph/
+
+# 本地密钥 / 环境变量（高权限信息严禁入库）
+.env
+.env.*
+*.local
