@@ -31,16 +31,10 @@ export async function GET(
       .select('*')
       .in('species_key', [mainSpeciesKey, ...secondarySpeciesKeys]);
     
-    // Get dimension scores
-    const { data: dimScores } = await supabase
-      .from('dimension_scores')
-      .select('dimension_key, score')
-      .eq('run_id', snap.run_id);
-    
     // Get run info
     const { data: run } = await supabase
       .from('test_runs')
-      .select('test_version, scorer_version, completed_at')
+      .select('test_version, scorer_version, completed_at, dimension_scores')
       .eq('id', snap.run_id)
       .single();
     
@@ -72,7 +66,7 @@ export async function GET(
       secondarySpecies: speciesList
         .filter((s: any) => secondarySpeciesKeys.includes(s.species_key))
         .map(normalizeSpecies),
-      dimensionScores: (dimScores as any[]) || [],
+      dimensionScores: (runData?.dimension_scores as any[]) || [],
     });
   } catch (e) {
     console.error('Get result error:', e);

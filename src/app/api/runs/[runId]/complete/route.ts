@@ -130,16 +130,6 @@ export async function POST(
     
     await supabase.from('test_answers').insert(answersData as any);
     
-    // Save dimension scores
-    if (result.dims) {
-      const dimScoresData = Object.entries(result.dims as Record<string, number>).map(([key, value]) => ({
-        run_id: runId,
-        dimension_key: key,
-        score: value,
-      }));
-      await supabase.from('dimension_scores').insert(dimScoresData as any);
-    }
-    
     // Create result snapshot
     const snapshot = {
       run_id: runId,
@@ -172,6 +162,12 @@ export async function POST(
         main_species_key: result.mainSpeciesKey,
         secondary_species_keys: result.secondarySpeciesKeys,
         share_code: shareCode,
+        dimension_scores: result.dims
+          ? Object.entries(result.dims as Record<string, number>).map(([k, v]) => ({
+              dimension_key: k,
+              score: v,
+            }))
+          : null,
       })
       .eq('id', runId);
     
